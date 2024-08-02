@@ -1,11 +1,14 @@
 package com.e2on.assignment.service;
 
-import com.e2on.assignment.entity.UploadFile;
+import com.e2on.assignment.entity.Image;
 import com.e2on.assignment.util.FileStore;
 import com.e2on.assignment.util.PythonLogger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 @Service
 public class AnalysisService {
@@ -19,18 +22,30 @@ public class AnalysisService {
         this.fileStore = fileStore;
     }
 
-    public String[] analysisImage(UploadFile image) throws IOException, InterruptedException {
+    public String[] analysisImage(Image image) throws IOException, InterruptedException {
 
-        String originalImageFullPath = fileStore.getOriginalFullPath(image.getStoreFileName());
-        String storeImageFullPath = fileStore.getStoreFullPath(image.getStoreFileName());
+        String uploadImageFullPath = ""; //fileStore.getOriginalFullPath(image.getUuidNameWithExt());
+        String analyzedImageFullPath = ""; //fileStore.getStoreFullPath(image.getUuidNameWithExt());
 
-        ProcessBuilder pb = new ProcessBuilder("python", analysisFile, originalImageFullPath, storeImageFullPath);
+        // mkdirs
+        if (FileStore.hasDirectory(Image.uploadedDir)) {
+            Files.createDirectories(Paths.get(Image.uploadedDir));
+            uploadImageFullPath += Image.uploadedDir + "/" + image.getUuidNameWithExt();
+        }
+
+        if (FileStore.hasDirectory(Image.analyzedDir)) {
+            uploadImageFullPath += (Image.analyzedDir + "/" + image.getUuidNameWithExt());
+        } else {
+            uploadImageFullPath += (Image.analyzedTempDir + "/" + image.getUuidNameWithExt());
+        }
+
+        ProcessBuilder pb = new ProcessBuilder("python", analysisFile, uploadImageFullPath, analyzedImageFullPath);
+        pb.redirectErrorStream(true);
         Process process = pb.start();
 
-        pb.redirectErrorStream(true);
         PythonLogger.recordLog(process);
 
 
-        return new String[] {fileStore.getPath(originalImageFullPath), fileStore.getPath(storeImageFullPath)};
+        return new String[] {fileStore.getPath(uploadImageFullPath), fileStore.getPath(analyzedImageFullPath)};
     }
 }

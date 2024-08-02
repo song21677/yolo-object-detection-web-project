@@ -1,5 +1,6 @@
 package com.e2on.assignment.controller;
 
+import com.e2on.assignment.entity.Image;
 import com.e2on.assignment.entity.UploadFile;
 import com.e2on.assignment.service.AnalysisService;
 import com.e2on.assignment.service.ImageService;
@@ -24,14 +25,14 @@ public class ImageController {
 
     @GetMapping("/upload-form")
     public String imageUploadForm() {
-        return "/imageUploadForm";
+        return "imageUploadForm";
     }
 
     @PostMapping("/analysis")
     @ResponseBody
     public String[] analysisImage(MultipartFile image) throws IOException, InterruptedException {
 
-        UploadFile savedImage = imageService.saveImage(image);
+        Image savedImage = imageService.saveImage(image);
         String[] images = analysisService.analysisImage(savedImage);
 
         return images;

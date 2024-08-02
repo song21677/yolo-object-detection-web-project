@@ -1,5 +1,6 @@
 package com.e2on.assignment.service;
 
+import com.e2on.assignment.entity.Image;
 import com.e2on.assignment.entity.UploadFile;
 import com.e2on.assignment.repository.FileRepository;
 import com.e2on.assignment.util.FileStore;
@@ -19,8 +20,8 @@ public class ImageService {
         this.fileRepository = fileRepository;
     }
 
-    public UploadFile saveImage(MultipartFile image) throws IOException {
-        UploadFile uploadFile = fileStore.storeFile(image);
-        return fileRepository.save(uploadFile);
+    public Image saveImage(MultipartFile image) throws IOException {
+        Image storedImage = fileStore.storeImage(image);
+        return fileRepository.save(storedImage);
     }
 }

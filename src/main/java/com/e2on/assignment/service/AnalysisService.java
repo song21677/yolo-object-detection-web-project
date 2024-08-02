@@ -13,6 +13,8 @@ import java.nio.file.Paths;
 @Service
 public class AnalysisService {
 
+    @Value("${dir.images.analysis}")
+    private String analyzedDir;
     @Value("${dir.python.analysis}")
     private String analysisFile;
 
@@ -24,27 +26,35 @@ public class AnalysisService {
 
     public String[] analysisImage(Image image) throws IOException, InterruptedException {
 
-        String uploadImageFullPath = ""; //fileStore.getOriginalFullPath(image.getUuidNameWithExt());
-        String analyzedImageFullPath = ""; //fileStore.getStoreFullPath(image.getUuidNameWithExt());
+        String uploadImageFullPath = FileStore.uploadedDir + "/" + image.getUuidNameWithExt();
+        String analyzedImageFullPath = analyzedDir + "/" + image.getUuidNameWithExt();
 
-        // mkdirs
-        if (FileStore.hasDirectory(Image.uploadedDir)) {
-            Files.createDirectories(Paths.get(Image.uploadedDir));
-            uploadImageFullPath += Image.uploadedDir + "/" + image.getUuidNameWithExt();
-        }
-
-        if (FileStore.hasDirectory(Image.analyzedDir)) {
-            uploadImageFullPath += (Image.analyzedDir + "/" + image.getUuidNameWithExt());
-        } else {
-            uploadImageFullPath += (Image.analyzedTempDir + "/" + image.getUuidNameWithExt());
+        if (!Files.exists(Paths.get(analyzedDir))) {
+            Files.createDirectories(Paths.get(analyzedDir));
         }
 
         ProcessBuilder pb = new ProcessBuilder("python", analysisFile, uploadImageFullPath, analyzedImageFullPath);
         pb.redirectErrorStream(true);
         Process process = pb.start();
 
+        /*
+        * void process(String command, Consumer consumer) {
+        *     ProcessBuilder .... <-- command
+        *     Process run
+        *     while stream
+        *         consumer.accept(stream line)
+        *     wait
+        * }
+        *
+        * process("python ...", consumer -> {
+        *    System.out.print(consumer)
+        * });
+        *
+        * */
+
         PythonLogger.recordLog(process);
 
+        process.waitFor();
 
         return new String[] {fileStore.getPath(uploadImageFullPath), fileStore.getPath(analyzedImageFullPath)};
     }

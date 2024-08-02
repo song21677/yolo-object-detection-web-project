@@ -1,7 +1,6 @@
 package com.e2on.assignment.controller;
 
 import com.e2on.assignment.entity.Image;
-import com.e2on.assignment.entity.UploadFile;
 import com.e2on.assignment.service.AnalysisService;
 import com.e2on.assignment.service.ImageService;
 import org.springframework.stereotype.Controller;

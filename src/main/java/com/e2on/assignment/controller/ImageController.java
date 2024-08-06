@@ -1,6 +1,6 @@
 package com.e2on.assignment.controller;
 
-import com.e2on.assignment.entity.Image;
+import com.e2on.assignment.entity.ImageEntity;
 import com.e2on.assignment.service.AnalysisService;
 import com.e2on.assignment.service.ImageService;
 import org.springframework.stereotype.Controller;
@@ -9,17 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @Controller
 public class ImageController {
 
     private final ImageService imageService;
-    private final AnalysisService analysisService;
 
     public ImageController(ImageService imageService, AnalysisService analysisService) {
         this.imageService = imageService;
-        this.analysisService = analysisService;
     }
 
     @GetMapping("/upload-form")
@@ -29,11 +25,15 @@ public class ImageController {
 
     @PostMapping("/analysis")
     @ResponseBody
-    public String[] analysisImage(MultipartFile image) throws IOException, InterruptedException {
+    public String analysisImage(MultipartFile image) throws Exception {
 
-        Image savedImage = imageService.saveImage(image);
-        String[] images = analysisService.analysisImage(savedImage);
+//        Image originalImage = imageService.saveImage(image);
+//        analysisService.analysisImage(originalImage);
 
-        return images;
+        ImageEntity analyzedImage = imageService.analysisImage(image);
+
+        return analyzedImage.getUuidNameWithExt();
     }
+
+
 }

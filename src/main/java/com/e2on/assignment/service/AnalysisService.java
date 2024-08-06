@@ -1,61 +1,77 @@
 package com.e2on.assignment.service;
 
-import com.e2on.assignment.entity.Image;
-import com.e2on.assignment.util.FileStore;
-import com.e2on.assignment.util.PythonLogger;
+import com.e2on.assignment.entity.AnalysisResultEntity;
+import com.e2on.assignment.entity.ImageEntity;
+import com.e2on.assignment.repository.AnalysisResultRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class AnalysisService {
 
-    @Value("${dir.images.analysis}")
-    private String analyzedDir;
+    public static String analyzedDir;
+
     @Value("${dir.python.analysis}")
     private String analysisFile;
 
-    private final FileStore fileStore;
+    private final AnalysisResultRepository analysisResultRepository;
 
-    public AnalysisService(FileStore fileStore) {
-        this.fileStore = fileStore;
+    public AnalysisService(AnalysisResultRepository analysisResultRepository) {
+        this.analysisResultRepository = analysisResultRepository;
     }
 
-    public String[] analysisImage(Image image) throws IOException, InterruptedException {
-
-        String uploadImageFullPath = FileStore.uploadedDir + "/" + image.getUuidNameWithExt();
-        String analyzedImageFullPath = analyzedDir + "/" + image.getUuidNameWithExt();
+    @Transactional
+    public List<AnalysisResultEntity> analysisImage(ImageEntity image) throws IOException, InterruptedException {
 
         if (!Files.exists(Paths.get(analyzedDir))) {
             Files.createDirectories(Paths.get(analyzedDir));
         }
-
+        String uploadImageFullPath = ImageService.uploadedDir + "/" + image.getUuidNameWithExt();
+        String analyzedImageFullPath = analyzedDir + "/" + image.getUuidNameWithExt();
         ProcessBuilder pb = new ProcessBuilder("python", analysisFile, uploadImageFullPath, analyzedImageFullPath);
         pb.redirectErrorStream(true);
         Process process = pb.start();
+        InputStream inputStream = process.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-        /*
-        * void process(String command, Consumer consumer) {
-        *     ProcessBuilder .... <-- command
-        *     Process run
-        *     while stream
-        *         consumer.accept(stream line)
-        *     wait
-        * }
-        *
-        * process("python ...", consumer -> {
-        *    System.out.print(consumer)
-        * });
-        *
-        * */
-
-        PythonLogger.recordLog(process);
-
+        List<AnalysisResultEntity> results = new ArrayList<>();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            System.out.println(line);
+            String regex = "xywhn\tclass\tconfidence\t([0-9.\t]+)";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find()) {
+                String group = matcher.group(1);
+                String[] imageInfo = group.split("\t");
+                AnalysisResultEntity analysisResult = new AnalysisResultEntity();
+                analysisResult.setImageUuid(image.getId());
+                analysisResult.setX(Double.parseDouble(imageInfo[0]));
+                analysisResult.setY(Double.parseDouble(imageInfo[1]));
+                analysisResult.setW(Double.parseDouble(imageInfo[2]));
+                analysisResult.setH(Double.parseDouble(imageInfo[3]));
+                analysisResult.setCls((int) Double.parseDouble(imageInfo[4]));
+                analysisResult.setConfidence(Double.parseDouble(imageInfo[5]));
+                results.add(analysisResult);
+            }
+        }
+        reader.close();
         process.waitFor();
 
-        return new String[] {fileStore.getPath(uploadImageFullPath), fileStore.getPath(analyzedImageFullPath)};
+        return results;
+    }
+
+    @Value("${dir.images.analysis}")
+    private void setAnalyzedDir(String analyzedDir) {
+        AnalysisService.analyzedDir = analyzedDir;
     }
 }

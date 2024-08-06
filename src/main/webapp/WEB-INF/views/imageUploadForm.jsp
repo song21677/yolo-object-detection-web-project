@@ -30,17 +30,14 @@
                     url: url,
                     method: method,
                     data: formData,
-                    dataType: "json",
                     success: function (data) {
                         alert("성공");
                         console.log(data);
-                        console.log(data[0]);
-                        console.log(data[1]);
 
                         loadImage(data)
                     },
-                    error: function () {
-                        alert("실패");
+                    error: function (request, status, error) {
+                        alert("실패 code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
                     },
                     cache: false,
                     contentType: false,
@@ -50,15 +47,12 @@
         });
 
 
-        function loadImage(images) {
+        function loadImage(id) {
 
-            images.forEach(function (src) {
-                console.log(src);
-                let image = $("<img>").attr('src', src);
-                console.log(image);
-                $(".result").append(image);
-            });
-
+            let originalImage = $("<img>").attr('src', '/images/original/' + id);
+            $(".result").append(originalImage);
+            let analyzedImage = $("<img>").attr('src', '/images/analysis/' + id);
+            $(".result").append(analyzedImage);
         }
 
         function updateImageDisplay() {

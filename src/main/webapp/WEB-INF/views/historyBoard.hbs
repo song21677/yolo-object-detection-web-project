@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8"%>
+
+<script type="text/x-handlebars-template" id="test-template">
+    <thead>
+        <tr>
+            <th>a</th>
+            <th>b</th>
+            <th>c</th>
+            <th>d</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each list}}
+            <tr>
+                <td>{{@index}}</td>
+                <td>{{uploadedName}}</td>
+                <td>{{owner}}</td>
+                <td>{{requestAt}}</td>
+            </tr>
+        {{/each}}
+    </tbody>
+</script>

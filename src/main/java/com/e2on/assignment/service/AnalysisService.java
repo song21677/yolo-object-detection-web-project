@@ -54,7 +54,7 @@ public class AnalysisService {
                 String group = matcher.group(1);
                 String[] imageInfo = group.split("\t");
                 AnalysisResultEntity analysisResult = new AnalysisResultEntity();
-                analysisResult.setImageUuid(image.getId());
+                analysisResult.setImageId(image.getId());
                 analysisResult.setX(Double.parseDouble(imageInfo[0]));
                 analysisResult.setY(Double.parseDouble(imageInfo[1]));
                 analysisResult.setW(Double.parseDouble(imageInfo[2]));

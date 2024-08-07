@@ -26,6 +26,11 @@
                 let method = form.attr("method");
                 let formData = new FormData(form[0]);
 
+                let entries = formData.entries();
+                for (const pair of entries) {
+                    console.log(pair[0]+ ', ' + pair[1]);
+                }
+
                 $.ajax({
                     url: url,
                     method: method,

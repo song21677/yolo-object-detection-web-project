@@ -1,5 +1,6 @@
 package com.e2on.assignment.entity;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -7,6 +8,7 @@ import javax.persistence.*;
 import java.util.UUID;
 
 @Setter
+@Getter
 @NoArgsConstructor
 @Entity
 @Table(name = "analysis_result")
@@ -18,7 +20,7 @@ public class AnalysisResultEntity {
     private Long id;
 
     @Column(name = "image_uuid")
-    private UUID imageUuid;
+    private UUID imageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_uuid", insertable = false, updatable = false)

@@ -7,8 +7,6 @@ import lombok.Setter;
 @Getter
 public class AnalysisResultDTO {
 
-    //private ImageDTO imageDto;
-
     private Double x;
 
     private Double y;
@@ -17,7 +15,7 @@ public class AnalysisResultDTO {
 
     private Double h;
 
-    private Integer cls;
+    private String cls;
 
     private Double confidence;
 }

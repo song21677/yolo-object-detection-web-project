@@ -4,16 +4,16 @@
 <script type="text/x-handlebars-template" id="test-template">
     <thead>
         <tr>
-            <th>a</th>
-            <th>b</th>
-            <th>c</th>
-            <th>d</th>
+            <th scope="col">번호</th>
+            <th scope="col">이미지</th>
+            <th scope="col">작성자</th>
+            <th scope="col">날짜</th>
         </tr>
     </thead>
     <tbody>
         {{#each list}}
-            <tr>
-                <td>{{@index}}</td>
+            <tr id="{{id}}" class="row2">
+                <td scope="row">{{@index}}</td>
                 <td>{{uploadedName}}</td>
                 <td>{{owner}}</td>
                 <td>{{requestAt}}</td>

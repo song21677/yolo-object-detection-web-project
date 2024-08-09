@@ -19,24 +19,26 @@
     <script>
         $(document).ready(function () {
 
-            $("button").on("click", function (e) {
-                let form = $("form");
-                let url = $("form").attr("action");
-                let method = $("form").attr("method");
-                let formData = new FormData(form[0]);
-
-                $.ajax({
-                    url: url,
-                    method: method,
-                    data: formData,
-                    success: function (data) {
-                        console.log(data);
-                    },
-                    error: function (request, status, error) {
-                        alert("실패 code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
-                    }
-                })
-            });
+            // $("button").on("click", function (e) {
+            //     //e.preventDefault();
+            //
+            //     let form = $("form");
+            //     let url = $("form").attr("action");
+            //     let method = $("form").attr("method");
+            //     let formData = new FormData(form[0]);
+            //
+            //     $.ajax({
+            //         url: url,
+            //         method: method,
+            //         data: formData,
+            //         success: function (data) {
+            //             console.log(data);
+            //         },
+            //         error: function (request, status, error) {
+            //             alert("실패 code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);
+            //         }
+            //     })
+            // });
         });
     </script>
 </head>
@@ -55,5 +57,7 @@
 
         <button>로그인</button>
     </form>
+
+    <a href="/sign-up-page">회원가입</a>
 </body>
 </html>

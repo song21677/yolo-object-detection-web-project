@@ -1,0 +1,65 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+pageEncoding="UTF-8"%>
+<script type="text/x-handlebars-template" id="history-detail">
+<div class="wrap">
+    <div>
+        <div>
+            <a href="/download/{{detail.storedName}}?type=original">{{detail.uploadedName}}</a>
+        </div>
+        <div>
+            <a href="/download/{{detail.storedName}}?type=analysis">{{detail.storedName}}</a>
+        </div>
+    </div>
+    <div class="images">
+        <div class="imageDetail">
+            <img id="original" src="/images/original/{{detail.storedName}}">
+            <table>
+                <tr>
+                    <th>파일 이름</th>
+                    <td>{{detail.uploadedName}}</td>
+                </tr>
+                <tr>
+                    <th>mimeType</th>
+                    <td>{{detail.mimeType}}</td>
+                </tr>
+                <tr>
+                    <th>용량</th>
+                    <td>{{detail.uploadedSize}} byte</td>
+                </tr>
+                <tr>
+                    <th>업로드 시간</th>
+                    <td>{{detail.requestAt}}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="imageDetail">
+            <img id="analysis" src="/images/analysis/{{detail.storedName}}">
+            <div id="contents">
+                {{#each detail.analysisResultDTOList}}
+                <table>
+                    <tr>
+                        <th rowspan="6">결과</th>
+                        <td>{{cls}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{confidence}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{x}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{y}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{w}}</td>
+                    </tr>
+                    <tr>
+                        <td>{{h}}</td>
+                    </tr>
+                </table>
+                {{/each}}
+           </div>
+        </div>
+    </div>
+</div>
+</script>

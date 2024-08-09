@@ -10,13 +10,13 @@ import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -41,9 +41,9 @@ public class ImageService {
     }
 
     @Transactional
-    public ImageEntity analysisImage(MultipartFile image) throws Exception {
+    public ImageEntity analysisImage(MultipartFile image, UUID id) throws Exception {
 
-        ImageEntity originalImage = saveImage(image);
+        ImageEntity originalImage = uploadImage(image, id);
         List<AnalysisResultEntity> analysisResults = analysisService.analysisImage(originalImage);
         File file = new File(AnalysisService.analyzedDir + "/" + originalImage.getUuidNameWithExt());
         originalImage.setAnalyzedSize(file.length());
@@ -54,7 +54,7 @@ public class ImageService {
     }
 
     @Transactional
-    public ImageEntity saveImage(MultipartFile multipartFile) throws IOException {
+    public ImageEntity uploadImage(MultipartFile multipartFile, UUID id) throws IOException {
         if (multipartFile.isEmpty()) {
             return null;
         }
@@ -66,8 +66,6 @@ public class ImageService {
         Tika tika = new Tika();
         ImageEntity image = new ImageEntity();
 
-//        InputStream in = null;
-//        InputStream in2 = null;
 
         String mimeType = null;
         try (InputStream in = multipartFile.getInputStream()) {
@@ -79,31 +77,35 @@ public class ImageService {
             bufferedImage = ImageIO.read(in);
         }
 
-//            in = multipartFile.getInputStream();
-//            in2 = multipartFile.getInputStream();
-
         image.setId(UUID.randomUUID());
-//        MemberEntity testMember = memberRepository.findById(UUID.fromString("ef2becd2-e00d-43f4-af1b-93e08509bb2a")).get();
-//        image.setMember(testMember);
-        image.setMemberId(UUID.fromString("ef2becd2-e00d-43f4-af1b-93e08509bb2a"));
+        image.setMemberId(id);
         image.setUploadedName(removeExt(multipartFile.getOriginalFilename()));
         image.setExtension(extractExt(multipartFile.getOriginalFilename()));
         image.setUploadedSize(multipartFile.getSize());
-//            image.setMimeType(tika.detect(in));
         image.setMimeType(mimeType);
-//            BufferedImage bufferedImage = ImageIO.read(in2);
         image.setWidth(bufferedImage.getWidth());
         image.setHeight(bufferedImage.getHeight());
         image.setUploadedAt(LocalDateTime.now());
-//        } finally {
-//            if (in != null) in.close();
-//            if (in2 != null) in2.close();
-//        }
 
         multipartFile.transferTo(new File(uploadedDir + "/" + image.getUuidNameWithExt()));
         imageRepository.save(image);
 
         return image;
+    }
+
+    @Transactional
+    public File downloadImage(String imageName, String type) {
+        File file = null;
+
+        if (type.equals("original")) {
+            file = new File(uploadedDir + "/" + imageName);
+        } else if (type.equals("analysis")) {
+            file = new File(AnalysisService.analyzedDir + "/" + imageName);
+        } else {
+            throw new IllegalArgumentException("잘못된 type입니다.");
+        }
+
+        return file;
     }
 
     private String extractExt(String originalImageName) {
@@ -122,5 +124,4 @@ public class ImageService {
     private void setUploadedDir(String imageDir) {
         ImageService.uploadedDir = imageDir;
     }
-
 }

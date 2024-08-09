@@ -1,22 +1,27 @@
 package com.e2on.assignment.dto;
 
-import com.e2on.assignment.entity.ImageEntity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 
 @Getter
 @Setter
 public class ImageDTO {
 
+    private UUID id;
+
+    private String storedName;
+
     private String uploadedName;
 
     private String owner;
 
-    private String requestAt;
+    private LocalDate requestAt;
 
     private String mimeType;
 

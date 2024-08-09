@@ -38,18 +38,10 @@ public class AnalysisResultEntity {
     @Column(name = "h")
     private Double h;
 
+    @Convert(converter = ClsCodeConverter.class)
     @Column(name="cls")
-    private Integer cls;
+    private ClsCode cls;
 
     @Column(name = "confidence")
     private Double confidence;
-
-    public AnalysisResultEntity(Double x, Double y, Double w, Double h, Integer cls, Double confidence) {
-        this.x = x;
-        this.y = y;
-        this.w = w;
-        this.h = h;
-        this.cls = cls;
-        this.confidence = confidence;
-    }
 }

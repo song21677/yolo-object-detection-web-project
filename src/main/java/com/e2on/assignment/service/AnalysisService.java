@@ -1,6 +1,7 @@
 package com.e2on.assignment.service;
 
 import com.e2on.assignment.entity.AnalysisResultEntity;
+import com.e2on.assignment.entity.ClsCode;
 import com.e2on.assignment.entity.ImageEntity;
 import com.e2on.assignment.repository.AnalysisResultRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,7 +60,7 @@ public class AnalysisService {
                 analysisResult.setY(Double.parseDouble(imageInfo[1]));
                 analysisResult.setW(Double.parseDouble(imageInfo[2]));
                 analysisResult.setH(Double.parseDouble(imageInfo[3]));
-                analysisResult.setCls((int) Double.parseDouble(imageInfo[4]));
+                analysisResult.setCls(ClsCode.ofValue((int) Double.parseDouble(imageInfo[4])));
                 analysisResult.setConfidence(Double.parseDouble(imageInfo[5]));
                 results.add(analysisResult);
             }

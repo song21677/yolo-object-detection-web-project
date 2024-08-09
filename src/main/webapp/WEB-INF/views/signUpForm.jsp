@@ -34,7 +34,8 @@
                     method: method,
                     data: formData,
                     success: function (data) {
-                        alert("회원가입 되었습니다!" + data);
+                        alert("회원가입 되었습니다!");
+                        window.location.replace("/login-page");
                     },
                     error: function (request, status, error) {
                         alert("실패 code:" + request.status + "\n" + "message:" + request.responseText + "\n" + "error:" + error);

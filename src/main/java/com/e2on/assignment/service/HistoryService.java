@@ -28,16 +28,16 @@ public class HistoryService {
 
     @Transactional
     public List<ImageDTO> showHistoryList(MemberEntity session) {
-        //List<ImageEntity> ImageList = imageRepository.findAll();
         List<ImageEntity> imageList = imageRepository.findAllByMemberId(session.getId());
 
         List<ImageDTO> historyList = imageList.stream()
                 .map(image -> {
                     ImageDTO imageDTO = new ImageDTO();
+                    imageDTO.setId(image.getId());
                     imageDTO.setUploadedName(image.getUploadedNameWithExt());
                     MemberEntity member = image.getMember();
                     imageDTO.setOwner(member.getLoginId());
-                    imageDTO.setRequestAt(image.getUploadedAt().toLocalDate().toString());
+                    imageDTO.setRequestAt(image.getUploadedAt().toLocalDate());
                     return imageDTO;
                 })
                 .collect(Collectors.toList());
@@ -48,15 +48,17 @@ public class HistoryService {
     @Transactional
     public ImageDTO showHistory(String id) {
         //List<AnalysisResultEntity> byImageId = analysisResultRepository.findByImageId(UUID.fromString("3dee33b6-fba5-4563-a7ef-57ad302b6293"));
-        UUID imageId = UUID.fromString("5b2eea7c-d252-4b56-a015-7d7a1997868a");
-        List<AnalysisResultEntity> analysisResult = analysisResultRepository.findAllByImageId(imageId);
+        //UUID imageId = UUID.fromString("5b2eea7c-d252-4b56-a015-7d7a1997868a");
+        List<AnalysisResultEntity> analysisResult = analysisResultRepository.findAllByImageId(UUID.fromString(id));
 
         ImageEntity image = analysisResult.get(0).getImage();
         ImageDTO imageDTO = new ImageDTO();
-        imageDTO.setUploadedName(image.getUploadedName());
+        imageDTO.setId(image.getId());
+        imageDTO.setStoredName(image.getUuidNameWithExt());
+        imageDTO.setUploadedName(image.getUploadedNameWithExt());
         MemberEntity member = image.getMember();
         imageDTO.setOwner(member.getLoginId());
-        imageDTO.setRequestAt(image.getUploadedAt().toLocalDate().toString());
+        imageDTO.setRequestAt(image.getUploadedAt().toLocalDate());
         imageDTO.setUploadedSize(image.getUploadedSize());
         imageDTO.setAnalyzedAt(image.getAnalyzedAt());
         imageDTO.setAnalyzedSize(image.getAnalyzedSize());
@@ -69,7 +71,7 @@ public class HistoryService {
                     analysisResultDto.setY(rs.getY());
                     analysisResultDto.setW(rs.getW());
                     analysisResultDto.setH(rs.getH());
-                    analysisResultDto.setCls(rs.getCls());
+                    analysisResultDto.setCls(rs.getCls().getMean());
                     analysisResultDto.setConfidence(rs.getConfidence());
 
                     return analysisResultDto;

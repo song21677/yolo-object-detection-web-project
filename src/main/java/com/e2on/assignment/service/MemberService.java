@@ -36,12 +36,12 @@ public class MemberService implements UserDetailsService {
         //return toUserDetails(member);
     }
 
-    private UserDetails toUserDetails(MemberEntity member) {
-        return User.builder()
-                .username(member.getLoginId())
-                .password(member.getPassword())
-               .build();
-    }
+//    private UserDetails toUserDetails(MemberEntity member) {
+//        return User.builder()
+//                .username(member.getLoginId())
+//                .password(member.getPassword())
+//               .build();
+//    }
 
     public void save(MemberEntity member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -50,9 +50,4 @@ public class MemberService implements UserDetailsService {
         member.setUpdatedAt(LocalDateTime.now());
         memberRepository.save(member);
     }
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        return null;
-//    }
 }
